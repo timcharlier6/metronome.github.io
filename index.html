@@ -17,74 +17,80 @@
       background-color: darkolivegreen;
     }
 
-
     #bpmNum {
-    -webkit-appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield; /* Firefox removes spinner by default */
-    appearance: textfield;
-    width: 85px;
-
+      -webkit-appearance: none;
+      -moz-appearance: textfield; /* Firefox removes spinner by default */
+      appearance: textfield;
+      width: 85px;
     }
 
+
     #bpmSlider {
-      /*-webkit-transform:rotate(-90deg);*/
       width: 75vw;
     }
 
     #startStop {
-  display: inline-block;
-  padding: 15px 25px;
-  font-size: 24px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #fff;
-  background-color: #04AA6D;
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 9px #999;
-}
+      display: inline-block;
+      padding: 15px 25px;
+      font-size: 24px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      outline: none;
+      color: #fff;
+      background-color: #04AA6D;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 9px #999;
+    }
 
-#startStop:hover {background-color: #3e8e41}
+    #startStop:hover {
+      background-color: #3e8e41;
+    }
 
-#startStop:active {
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
-}
+    #startStop:active {
+      background-color: #3e8e41;
+      box-shadow: 0 5px #666;
+      transform: translateY(4px);
+    }
 
-    .params >  * {
+    .params > * {
       -webkit-appearance: none; /* Safari and Chrome */
-    -moz-appearance: none; /* Firefox */
-    appearance: none; /* Standard syntax */
-  background-color: #04AA6D; /* Green */
-  border: 1px solid green;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 16px;
-  cursor: pointer;
-  width: 150px;
-  display: block;
-}
+      -moz-appearance: none; /* Firefox */
+      appearance: none; /* Standard syntax */
+      background-color: #04AA6D; /* Green */
+      border: 1px solid green;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+      width: 150px;
+      display: block;
+    }
 
-.params select:not(:last-child) {
-  border-bottom: none; /* Prevent double borders */
-}
+    .params select:not(:last-child) {
+      border-bottom: none; /* Prevent double borders */
+    }
 
-.params select:hover {
-  background-color: #3e8e41;
-}
+    .params select:hover {
+      background-color: #3e8e41;
+    }
+
+    @media only screen and (max-width: 600px) and (orientation: portrait) {
+      #bpmSlider {
+        -webkit-transform: rotate(-90deg);
+        width: 75vw;
+        margin-bottom: 20px;
+      }
+    }
 
   </style>
 </head>
 <body>
-    <button id="startStop">Start</button>
-        
-    <input onchange="syncNum()" type="range" min="30" max="200" step="1" id="bpmSlider" value="52">
+  <button id="startStop">Start</button>
+  <input onchange="syncNum()" type="range" min="30" max="200" step="1" id="bpmSlider" value="52">
   <div class="params">
     <input onchange="syncSlide()" type="number" min="30" max="200" id="bpmNum" placeholder="Enter bpm" onfocus="clearInput(this)">
 
@@ -115,11 +121,10 @@
       <option value="triangle" selected>Triangle</option>
       <option value="sawtooth">Sawtooth</option>
     </select>
-</div>
+  </div>
   <script type="text/javascript">
     let player;
 
-    // Mapping of pitch to base frequency
     const pitchToFrequency = {
       "C": 16.35, "C#": 17.32, "D": 18.35, "D#": 19.45, "E": 20.60, "F": 21.83, "F#": 23.12, "G": 24.50,
       "G#": 25.96, "A": 27.50, "A#": 29.14, "B": 30.87
@@ -130,11 +135,10 @@
         return 440; // Default to A4 if invalid input
       }
       const baseFrequency = pitchToFrequency[pitch];
-      return baseFrequency * Math.pow(2, octave - 1); // Calculate frequency based on octave
+      return baseFrequency * Math.pow(2, octave - 1);
     }
 
     window.onload = function() {
-      // Initialize the audio context on first user interaction
       document.body.addEventListener('click', init, { once: true });
     };
 
@@ -153,25 +157,23 @@
         Tone.Transport.bpm.value = 52;
 
         Tone.Transport.scheduleRepeat((time) => {
-          player.start(time).stop(time + 0.1); // Start and stop the oscillator quickly to create a pulse
+          player.start(time).stop(time + 0.1);
         }, "4n");
       });
     }
 
-    const startStopButton = document.getElementById('startStop');
-    startStopButton.addEventListener("click", toggleTransport);
-
     function toggleTransport() {
       if (Tone.Transport.state !== 'started') {
         Tone.Transport.start();
-        let bpm = Tone.Transport.bpm.value;
-        console.log(bpm);
         startStopButton.innerHTML = "Stop";
       } else {
         Tone.Transport.stop();
         startStopButton.innerHTML = "Start";
       }
     }
+
+    const startStopButton = document.getElementById('startStop');
+    startStopButton.addEventListener("click", toggleTransport);
 
     function syncNum() {
       const bpmSlider = document.getElementById('bpmSlider');
@@ -191,7 +193,7 @@
 
     document.getElementById('waveform').addEventListener('change', function() {
       if (player) {
-        player.type = this.value; // Update the oscillator type if player is already initialized
+        player.type = this.value;
       }
     });
 
@@ -203,7 +205,7 @@
         const pitch = document.getElementById('pitch').value;
         const octave = parseInt(document.getElementById('octave').value, 10);
         const frequency = getFrequency(pitch, octave);
-        player.frequency.setValueAtTime(frequency, Tone.now()); // Update frequency if player is already initialized
+        player.frequency.setValueAtTime(frequency, Tone.now());
       }
     }
 
