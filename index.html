@@ -3,44 +3,119 @@
 <head>
   <title>Tone.js Oscillator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: darkolivegreen;
+    }
+
+
+    #bpmNum {
+    -webkit-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield; /* Firefox removes spinner by default */
+    appearance: textfield;
+    width: 85px;
+
+    }
+
+    #bpmSlider {
+      /*-webkit-transform:rotate(-90deg);*/
+      width: 75vw;
+    }
+
+    #startStop {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #04AA6D;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+#startStop:hover {background-color: #3e8e41}
+
+#startStop:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+    .params >  * {
+      -webkit-appearance: none; /* Safari and Chrome */
+    -moz-appearance: none; /* Firefox */
+    appearance: none; /* Standard syntax */
+  background-color: #04AA6D; /* Green */
+  border: 1px solid green;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 150px;
+  display: block;
+}
+
+.params select:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+.params select:hover {
+  background-color: #3e8e41;
+}
+
+  </style>
 </head>
 <body>
-  <label for="waveform">Waveform:</label>
-  <select id="waveform">
-    <option value="square">Square</option>
-    <option value="triangle">Triangle</option>
-    <option value="sawtooth">Sawtooth</option>
-  </select>
+    <button id="startStop">Start</button>
+        
+    <input onchange="syncNum()" type="range" min="30" max="200" step="1" id="bpmSlider" value="52">
+  <div class="params">
+    <input onchange="syncSlide()" type="number" min="30" max="200" id="bpmNum" placeholder="Enter bpm" onfocus="clearInput(this)">
 
-  <label for="pitch">Pitch:</label>
-  <select id="pitch">
-    <option value="C">C</option>
-    <option value="C#">C#</option>
-    <option value="D">D</option>
-    <option value="D#">D#</option>
-    <option value="E">E</option>
-    <option value="F">F</option>
-    <option value="F#">F#</option>
-    <option value="G">G</option>
-    <option value="G#">G#</option>
-    <option value="A">A</option>
-    <option value="A#">A#</option>
-    <option value="B">B</option>
-  </select>
+    <select id="pitch">
+      <option value="C">C</option>
+      <option value="C#">C#</option>
+      <option value="D">D</option>
+      <option value="D#">D#</option>
+      <option value="E">E</option>
+      <option value="F">F</option>
+      <option value="F#">F#</option>
+      <option value="G">G</option>
+      <option value="G#">G#</option>
+      <option value="A">A</option>
+      <option value="A#">A#</option>
+      <option value="B">B</option>
+    </select>
 
-  <label for="octave">Octave:</label>
-  <select id="octave">
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-  </select>
+    <select id="octave">
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+    </select>
 
-  <label for="bpm">BPM:</label>
-  <input type="number" name="bpm" id="bpm" placeholder="Enter BPM" value="52">
-  <button onclick="submitBPM()">Set BPM</button>
-  <button id="startStop">Start</button>
-
+    <select id="waveform">
+      <option value="square">Square</option>
+      <option value="triangle">Triangle</option>
+      <option value="sawtooth">Sawtooth</option>
+    </select>
+</div>
   <script type="text/javascript">
     let player;
 
@@ -80,8 +155,6 @@
         Tone.Transport.scheduleRepeat((time) => {
           player.start(time).stop(time + 0.1); // Start and stop the oscillator quickly to create a pulse
         }, "4n");
-
-        console.log('Audio initialized');
       });
     }
 
@@ -91,6 +164,8 @@
     function toggleTransport() {
       if (Tone.Transport.state !== 'started') {
         Tone.Transport.start();
+        let bpm = Tone.Transport.bpm.value;
+        console.log(bpm);
         startStopButton.innerHTML = "Stop";
       } else {
         Tone.Transport.stop();
@@ -98,8 +173,19 @@
       }
     }
 
-    function submitBPM() {
-      const bpm = document.getElementById('bpm').value;
+    function syncNum() {
+      const bpmSlider = document.getElementById('bpmSlider');
+      const bpmNum = document.getElementById('bpmNum');
+      const bpm = bpmSlider.value;
+      bpmNum.value = bpm;
+      Tone.Transport.bpm.value = bpm;
+    }
+
+    function syncSlide() {
+      const bpmSlider = document.getElementById('bpmSlider');
+      const bpmNum = document.getElementById('bpmNum');
+      const bpm = bpmNum.value;
+      bpmSlider.value = bpm;
       Tone.Transport.bpm.value = bpm;
     }
 
@@ -119,6 +205,10 @@
         const frequency = getFrequency(pitch, octave);
         player.frequency.setValueAtTime(frequency, Tone.now()); // Update frequency if player is already initialized
       }
+    }
+
+    function clearInput(input) {
+      input.value = '';
     }
   </script>
 </body>
