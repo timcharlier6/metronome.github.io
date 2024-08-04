@@ -1,33 +1,123 @@
-html
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Infinite Pulse Sound with Tone.js</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.29/Tone.min.js"></script>
+  <title>Tone.js Oscillator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
 </head>
 <body>
-  <button onclick="startPulse()">Start Pulse</button>
-  <button onclick="stopPulse()">Stop Pulse</button>
-  <script>
-    let pulseOscillator;
-    let isPlaying = false;
+  <label for="waveform">Waveform:</label>
+  <select id="waveform">
+    <option value="square">Square</option>
+    <option value="triangle">Triangle</option>
+    <option value="sawtooth">Sawtooth</option>
+  </select>
 
-    function startPulse() {
-      if (!isPlaying) {
-        pulseOscillator = new Tone.Oscillator({
-          type: 'sine', // You can change the type to 'square', 'triangle', 'sawtooth', etc.
-          frequency: 440 // Frequency of the pulse in Hz
+  <label for="pitch">Pitch:</label>
+  <select id="pitch">
+    <option value="C">C</option>
+    <option value="C#">C#</option>
+    <option value="D">D</option>
+    <option value="D#">D#</option>
+    <option value="E">E</option>
+    <option value="F">F</option>
+    <option value="F#">F#</option>
+    <option value="G">G</option>
+    <option value="G#">G#</option>
+    <option value="A">A</option>
+    <option value="A#">A#</option>
+    <option value="B">B</option>
+  </select>
+
+  <label for="octave">Octave:</label>
+  <select id="octave">
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+  </select>
+
+  <label for="bpm">BPM:</label>
+  <input type="number" name="bpm" id="bpm" placeholder="Enter BPM" value="52">
+  <button onclick="submitBPM()">Set BPM</button>
+  <button id="startStop">Start</button>
+
+  <script type="text/javascript">
+    let player;
+
+    // Mapping of pitch to base frequency
+    const pitchToFrequency = {
+      "C": 16.35, "C#": 17.32, "D": 18.35, "D#": 19.45, "E": 20.60, "F": 21.83, "F#": 23.12, "G": 24.50,
+      "G#": 25.96, "A": 27.50, "A#": 29.14, "B": 30.87
+    };
+
+    function getFrequency(pitch, octave) {
+      if (!pitchToFrequency[pitch] || octave < 3 || octave > 6) {
+        return 440; // Default to A4 if invalid input
+      }
+      const baseFrequency = pitchToFrequency[pitch];
+      return baseFrequency * Math.pow(2, octave - 1); // Calculate frequency based on octave
+    }
+
+    window.onload = function() {
+      // Initialize the audio context on first user interaction
+      document.body.addEventListener('click', init, { once: true });
+    };
+
+    function init() {
+      Tone.start().then(() => {
+        const waveform = document.getElementById('waveform').value;
+        const pitch = document.getElementById('pitch').value;
+        const octave = parseInt(document.getElementById('octave').value, 10);
+        const frequency = getFrequency(pitch, octave);
+
+        player = new Tone.Oscillator({
+          type: waveform,
+          frequency: frequency
         }).toDestination();
 
-        pulseOscillator.start();
-        isPlaying = true;
+        Tone.Transport.bpm.value = 52;
+
+        Tone.Transport.scheduleRepeat((time) => {
+          player.start(time).stop(time + 0.1); // Start and stop the oscillator quickly to create a pulse
+        }, "4n");
+
+        console.log('Audio initialized');
+      });
+    }
+
+    const startStopButton = document.getElementById('startStop');
+    startStopButton.addEventListener("click", toggleTransport);
+
+    function toggleTransport() {
+      if (Tone.Transport.state !== 'started') {
+        Tone.Transport.start();
+        startStopButton.innerHTML = "Stop";
+      } else {
+        Tone.Transport.stop();
+        startStopButton.innerHTML = "Start";
       }
     }
 
-    function stopPulse() {
-      if (isPlaying) {
-        pulseOscillator.stop();
-        isPlaying = false;
+    function submitBPM() {
+      const bpm = document.getElementById('bpm').value;
+      Tone.Transport.bpm.value = bpm;
+    }
+
+    document.getElementById('waveform').addEventListener('change', function() {
+      if (player) {
+        player.type = this.value; // Update the oscillator type if player is already initialized
+      }
+    });
+
+    document.getElementById('pitch').addEventListener('change', updateFrequency);
+    document.getElementById('octave').addEventListener('change', updateFrequency);
+
+    function updateFrequency() {
+      if (player) {
+        const pitch = document.getElementById('pitch').value;
+        const octave = parseInt(document.getElementById('octave').value, 10);
+        const frequency = getFrequency(pitch, octave);
+        player.frequency.setValueAtTime(frequency, Tone.now()); // Update frequency if player is already initialized
       }
     }
   </script>
