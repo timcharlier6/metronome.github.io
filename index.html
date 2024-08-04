@@ -1,0 +1,35 @@
+html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Infinite Pulse Sound with Tone.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.29/Tone.min.js"></script>
+</head>
+<body>
+  <button onclick="startPulse()">Start Pulse</button>
+  <button onclick="stopPulse()">Stop Pulse</button>
+  <script>
+    let pulseOscillator;
+    let isPlaying = false;
+
+    function startPulse() {
+      if (!isPlaying) {
+        pulseOscillator = new Tone.Oscillator({
+          type: 'sine', // You can change the type to 'square', 'triangle', 'sawtooth', etc.
+          frequency: 440 // Frequency of the pulse in Hz
+        }).toDestination();
+
+        pulseOscillator.start();
+        isPlaying = true;
+      }
+    }
+
+    function stopPulse() {
+      if (isPlaying) {
+        pulseOscillator.stop();
+        isPlaying = false;
+      }
+    }
+  </script>
+</body>
+</html>
