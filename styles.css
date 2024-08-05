@@ -39,11 +39,43 @@ button {
 
 #bpmSlider {
   -webkit-transform: rotate(-90deg);
-  left: -37vw;
+  left: -50px;
   position: absolute;
   margin: 0;
   padding: 0;
-  width: 100vw;
+  width: 600px;
+  height: 50px;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 10px; /* Thickness of the track */
+  background: #ddd;
+  border-radius: 5px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; /* Thickness of the thumb */
+  height: 20px; /* Thickness of the thumb */
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-track {
+  height: 10px; /* Thickness of the track */
+  background: #ddd;
+  border-radius: 5px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; /* Thickness of the thumb */
+  height: 20px; /* Thickness of the thumb */
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 #startStop {
