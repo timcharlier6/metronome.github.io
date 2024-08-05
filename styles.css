@@ -1,0 +1,107 @@
+body {
+  align-items: center;
+  background-color: pink;
+  box-sizing: border-box;
+  color: darkblue;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, sans-serif;
+  font-size: 3em;
+  gap: 20px;
+  height: 100vh;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+}
+
+select,
+input,
+option,
+button {
+  font-size: inherit;
+  color: inherit;
+  background-color: hotpink;
+}
+
+#bpmNum {
+  -webkit-appearance: none;
+  -moz-appearance: textfield; /* Firefox removes spinner by default */
+  appearance: textfield;
+}
+
+#bpmSlider {
+  width: 35vw;
+  -webkit-transform: rotate(-90deg);
+  position: absolute;
+  top: 45%;
+  left: 50%;
+}
+
+#startStop {
+  display: inline-block;
+  padding: 15px 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  box-shadow: 0 9px #999;
+  font-weight: bold;
+}
+
+#startStop:hover {
+  opacity: 0.7;
+}
+
+#startStop:active {
+  opacity: 0.5;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+#bpmNum::-webkit-outer-spin-button,
+#bpmNum::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+select {
+  -o-appearance: none;
+  -ms-appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+#bpmNum {
+  -moz-appearance: textfield; /* Firefox */
+  margin: 0;
+  padding: 0;
+  padding: 15px 0;
+  width: 19vw;
+}
+
+.params > * {
+  padding: 15px 32px;
+}
+
+.params select:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+.params select:hover {
+  opacity: 0.7;
+}
+
+#startStop,
+#bpmNum,
+.params > * {
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+  width: 20vw;
+  margin-bottom: 20px;
+  border-radius: 15px;
+}

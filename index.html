@@ -1,217 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Tone.js Oscillator</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: darkolivegreen;
-    }
+  <head>
+    <title>Tone.js Oscillator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <input
+      onchange="syncNum()"
+      type="range"
+      min="30"
+      max="200"
+      step="1"
+      id="bpmSlider"
+      value="52"
+    />
+    <div class="params">
+      <input
+        onchange="syncSlide()"
+        type="number"
+        min="30"
+        max="200"
+        id="bpmNum"
+        placeholder="Enter bpm"
+        onfocus="clearInput(this)"
+      />
 
-    #bpmNum {
-      -webkit-appearance: none;
-      -moz-appearance: textfield; /* Firefox removes spinner by default */
-      appearance: textfield;
-      width: 85px;
-    }
+      <select id="pitch">
+        <option value="C">C</option>
+        <option value="C#">C#</option>
+        <option value="D">D</option>
+        <option value="D#">D#</option>
+        <option value="E">E</option>
+        <option value="F">F</option>
+        <option value="F#">F#</option>
+        <option value="G">G</option>
+        <option value="G#">G#</option>
+        <option value="A" selected>A</option>
+        <option value="A#">A#</option>
+        <option value="B">B</option>
+      </select>
 
+      <select id="octave">
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
 
-    #bpmSlider {
-      width: 75vw;
-    }
-
-    #startStop {
-      display: inline-block;
-      padding: 15px 25px;
-      font-size: 24px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      outline: none;
-      color: #fff;
-      background-color: #04AA6D;
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 9px #999;
-    }
-
-    #startStop:hover {
-      background-color: #3e8e41;
-    }
-
-    #startStop:active {
-      background-color: #3e8e41;
-      box-shadow: 0 5px #666;
-      transform: translateY(4px);
-    }
-
-    .params > * {
-      -webkit-appearance: none; /* Safari and Chrome */
-      -moz-appearance: none; /* Firefox */
-      appearance: none; /* Standard syntax */
-      background-color: #04AA6D; /* Green */
-      border: 1px solid green;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      font-size: 16px;
-      cursor: pointer;
-      width: 150px;
-      display: block;
-    }
-
-    .params select:not(:last-child) {
-      border-bottom: none; /* Prevent double borders */
-    }
-
-    .params select:hover {
-      background-color: #3e8e41;
-    }
-
-    @media only screen and (max-width: 600px) and (orientation: portrait) {
-      #bpmSlider {
-        -webkit-transform: rotate(-90deg);
-        width: 75vw;
-        margin-bottom: 20px;
-      }
-    }
-
-  </style>
-</head>
-<body>
-  <button id="startStop">Start</button>
-  <input onchange="syncNum()" type="range" min="30" max="200" step="1" id="bpmSlider" value="52">
-  <div class="params">
-    <input onchange="syncSlide()" type="number" min="30" max="200" id="bpmNum" placeholder="Enter bpm" onfocus="clearInput(this)">
-
-    <select id="pitch">
-      <option value="C">C</option>
-      <option value="C#">C#</option>
-      <option value="D">D</option>
-      <option value="D#">D#</option>
-      <option value="E">E</option>
-      <option value="F">F</option>
-      <option value="F#">F#</option>
-      <option value="G">G</option>
-      <option value="G#">G#</option>
-      <option value="A" selected>A</option>
-      <option value="A#">A#</option>
-      <option value="B">B</option>
-    </select>
-
-    <select id="octave">
-      <option value="3">3</option>
-      <option value="4" selected>4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-    </select>
-
-    <select id="waveform">
-      <option value="square">Square</option>
-      <option value="triangle" selected>Triangle</option>
-      <option value="sawtooth">Sawtooth</option>
-    </select>
-  </div>
-  <script type="text/javascript">
-    let player;
-
-    const pitchToFrequency = {
-      "C": 16.35, "C#": 17.32, "D": 18.35, "D#": 19.45, "E": 20.60, "F": 21.83, "F#": 23.12, "G": 24.50,
-      "G#": 25.96, "A": 27.50, "A#": 29.14, "B": 30.87
-    };
-
-    function getFrequency(pitch, octave) {
-      if (!pitchToFrequency[pitch] || octave < 3 || octave > 6) {
-        return 440; // Default to A4 if invalid input
-      }
-      const baseFrequency = pitchToFrequency[pitch];
-      return baseFrequency * Math.pow(2, octave - 1);
-    }
-
-    window.onload = function() {
-      document.body.addEventListener('click', init, { once: true });
-    };
-
-    function init() {
-      Tone.start().then(() => {
-        const waveform = document.getElementById('waveform').value;
-        const pitch = document.getElementById('pitch').value;
-        const octave = parseInt(document.getElementById('octave').value, 10);
-        const frequency = getFrequency(pitch, octave);
-
-        player = new Tone.Oscillator({
-          type: waveform,
-          frequency: frequency
-        }).toDestination();
-
-        Tone.Transport.bpm.value = 52;
-
-        Tone.Transport.scheduleRepeat((time) => {
-          player.start(time).stop(time + 0.1);
-        }, "4n");
-      });
-    }
-
-    function toggleTransport() {
-      if (Tone.Transport.state !== 'started') {
-        Tone.Transport.start();
-        startStopButton.innerHTML = "Stop";
-      } else {
-        Tone.Transport.stop();
-        startStopButton.innerHTML = "Start";
-      }
-    }
-
-    const startStopButton = document.getElementById('startStop');
-    startStopButton.addEventListener("click", toggleTransport);
-
-    function syncNum() {
-      const bpmSlider = document.getElementById('bpmSlider');
-      const bpmNum = document.getElementById('bpmNum');
-      const bpm = bpmSlider.value;
-      bpmNum.value = bpm;
-      Tone.Transport.bpm.value = bpm;
-    }
-
-    function syncSlide() {
-      const bpmSlider = document.getElementById('bpmSlider');
-      const bpmNum = document.getElementById('bpmNum');
-      const bpm = bpmNum.value;
-      bpmSlider.value = bpm;
-      Tone.Transport.bpm.value = bpm;
-    }
-
-    document.getElementById('waveform').addEventListener('change', function() {
-      if (player) {
-        player.type = this.value;
-      }
-    });
-
-    document.getElementById('pitch').addEventListener('change', updateFrequency);
-    document.getElementById('octave').addEventListener('change', updateFrequency);
-
-    function updateFrequency() {
-      if (player) {
-        const pitch = document.getElementById('pitch').value;
-        const octave = parseInt(document.getElementById('octave').value, 10);
-        const frequency = getFrequency(pitch, octave);
-        player.frequency.setValueAtTime(frequency, Tone.now());
-      }
-    }
-
-    function clearInput(input) {
-      input.value = '';
-    }
-  </script>
-</body>
+      <select id="waveform">
+        <option value="square">Square</option>
+        <option value="triangle" selected>Triangle</option>
+        <option value="sawtooth">Sawtooth</option>
+      </select>
+    </div>
+    <button id="startStop">START</button>
+  </body>
 </html>
