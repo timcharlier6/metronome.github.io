@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   align-items: center;
   background-color: pink;
@@ -10,15 +16,16 @@ body {
   gap: 20px;
   height: 100vh;
   justify-content: center;
-  margin: 0;
-  padding: 0;
+  margin: auto;
   width: 100vw;
+  position: relative;
 }
 
 select,
 input,
 option,
 button {
+  font-family: inherit;
   font-size: inherit;
   color: inherit;
   background-color: hotpink;
@@ -31,11 +38,13 @@ button {
 }
 
 #bpmSlider {
-  width: 35vw;
   -webkit-transform: rotate(-90deg);
+  left: -20vw;
   position: absolute;
-  top: 45%;
-  left: 50%;
+  margin: 0;
+  padding: 0;
+  width: 75vw;
+  z-index: -1;
 }
 
 #startStop {
@@ -79,7 +88,6 @@ select {
   margin: 0;
   padding: 0;
   padding: 15px 0;
-  width: 19vw;
 }
 
 .params > * {
@@ -101,7 +109,10 @@ select {
   text-decoration: none;
   cursor: pointer;
   display: block;
-  width: 20vw;
+  width: 40vw;
+  height: 10vh;
+  min-width: 500px;
+  min-height: 100px;
   margin-bottom: 20px;
   border-radius: 15px;
 }
