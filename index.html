@@ -1,33 +1,97 @@
 <!doctype html>
 <html>
   <head>
-    <title>Tone.js Oscillator</title>
+    <title>Metronome</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="script.js" defer></script>
   </head>
-  <body>
-    <input
-      onchange="syncNum()"
-      type="range"
-      min="30"
-      max="200"
-      step="1"
-      id="bpmSlider"
-      value="52"
-    />
+  <body class="bg-white dark:bg-gray-800">
+    <h1
+      class="text-center mt-5 text-4xl font-bold text-gray-900 dark:text-white"
+    >
+      Metronome
+    </h1>
     <div class="params">
-      <input
-        onchange="syncSlide()"
-        type="number"
-        min="30"
-        max="200"
-        id="bpmNum"
-        placeholder="Enter bpm"
-        onfocus="clearInput(this)"
-      />
+      <div class="w-full">
+        <label
+          for="bpmNum"
+          class="block text-center mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >TEMPO</label
+        >
+        <div class="relative flex items-center w-full">
+          <button
+            type="button"
+            id="decrement-button"
+            class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+          >
+            <svg
+              class="w-3 h-3 text-gray-900 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 18 2"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 1h16"
+              />
+            </svg>
+          </button>
+          <input
+            type="text"
+            id="bpmNum"
+            aria-describedby="helper-text-explanation"
+            class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            value="52"
+            min="30"
+            max="200"
+            required
+          />
+          <button
+            type="button"
+            id="increment-button"
+            class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+          >
+            <svg
+              class="w-3 h-3 text-gray-900 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 18 18"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 1v16M1 9h16"
+              />
+            </svg>
+          </button>
+        </div>
+        <p
+          id="helper-text-explanation"
+          class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400"
+        >
+          Please select a digit number from 30 to 200.
+        </p>
+      </div>
 
-      <select id="pitch">
+      <label
+        for="pitch"
+        class="block text-center mb-2 text-base font-medium text-gray-900 dark:text-white"
+        >Pitch</label
+      >
+      <select
+        id="pitch"
+        class="block text-center w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      >
         <option value="C">C</option>
         <option value="C#">C#</option>
         <option value="D">D</option>
@@ -42,19 +106,43 @@
         <option value="B">B</option>
       </select>
 
-      <select id="octave">
+      <label
+        for="octave"
+        class="block text-center mb-2 text-base font-medium text-gray-900 dark:text-white"
+        >Octave</label
+      >
+      <select
+        id="octave"
+        class="block text-center w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      >
         <option value="3">3</option>
         <option value="4" selected>4</option>
         <option value="5">5</option>
         <option value="6">6</option>
       </select>
 
-      <select id="waveform">
-        <option value="square">Square</option>
-        <option value="triangle" selected>Triangle</option>
+      <label
+        for="waveform"
+        class="block text-center mb-2 text-base font-medium text-gray-900 dark:text-white"
+        >Waveform</label
+      >
+      <select
+        id="waveform"
+        class="block text-center w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      >
+        <option value="square" selected>Square</option>
+        <option value="triangle">Triangle</option>
         <option value="sawtooth">Sawtooth</option>
       </select>
-      <button id="startStop">START</button>
+
+      <div id="buttonDiv" class="flex justify-center w-full">
+        <button
+          id="startStop"
+          class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+        >
+          START
+        </button>
+      </div>
     </div>
   </body>
 </html>

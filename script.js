@@ -1,99 +1,119 @@
-let player;
+document.addEventListener("DOMContentLoaded", () => {
+  const elements = {
+    incrementButton: document.getElementById("increment-button"),
+    decrementButton: document.getElementById("decrement-button"),
+    bpmInput: document.getElementById("bpmNum"),
+    startStopButton: document.getElementById("startStop"),
+    waveformSelect: document.getElementById("waveform"),
+    pitchSelect: document.getElementById("pitch"),
+    octaveSelect: document.getElementById("octave"),
+  };
 
-const pitchToFrequency = {
-  C: 16.35,
-  "C#": 17.32,
-  D: 18.35,
-  "D#": 19.45,
-  E: 20.6,
-  F: 21.83,
-  "F#": 23.12,
-  G: 24.5,
-  "G#": 25.96,
-  A: 27.5,
-  "A#": 29.14,
-  B: 30.87,
-};
+  const defaultBPM = 52;
+  let bpm = defaultBPM;
+  let minBPM = parseInt(elements.bpmInput.min, 10);
+  let maxBPM = parseInt(elements.bpmInput.max, 10);
 
-function getFrequency(pitch, octave) {
-  if (!pitchToFrequency[pitch] || octave < 3 || octave > 6) {
-    return 440; // Default to A4 if invalid input
-  }
-  const baseFrequency = pitchToFrequency[pitch];
-  return baseFrequency * Math.pow(2, octave - 1);
-}
+  const pitchToFrequency = {
+    C: 16.35,
+    "C#": 17.32,
+    D: 18.35,
+    "D#": 19.45,
+    E: 20.6,
+    F: 21.83,
+    "F#": 23.12,
+    G: 24.5,
+    "G#": 25.96,
+    A: 27.5,
+    "A#": 29.14,
+    B: 30.87,
+  };
 
-window.onload = function () {
-  document.body.addEventListener("click", init, { once: true });
-};
+  const getFrequency = (pitch, octave) =>
+    pitchToFrequency[pitch] * Math.pow(2, octave);
 
-function init() {
-  Tone.start().then(() => {
-    const waveform = document.getElementById("waveform").value;
-    const pitch = document.getElementById("pitch").value;
-    const octave = parseInt(document.getElementById("octave").value, 10);
-    const frequency = getFrequency(pitch, octave);
+  const updateFrequency = () => {
+    const pitch = elements.pitchSelect.value;
+    const octave = parseInt(elements.octaveSelect.value, 10);
+    if (player) {
+      player.frequency.setValueAtTime(getFrequency(pitch, octave), Tone.now());
+    }
+  };
 
+  const updateBPM = () => {
+    bpm = parseInt(elements.bpmInput.value, 10);
+    Tone.Transport.bpm.value = bpm;
+  };
+
+  const handleBPMInput = () => {
+    let value = parseInt(elements.bpmInput.value.trim(), 10);
+    if (isNaN(value) || value < minBPM || value > maxBPM) {
+      elements.bpmInput.value = defaultBPM;
+    } else {
+      elements.bpmInput.value = value;
+      updateBPM();
+    }
+  };
+
+  const initializePlayer = () => {
     player = new Tone.Oscillator({
-      type: waveform,
-      frequency: frequency,
+      type: elements.waveformSelect.value,
+      frequency: getFrequency(
+        elements.pitchSelect.value,
+        parseInt(elements.octaveSelect.value, 10),
+      ),
     }).toDestination();
 
-    Tone.Transport.bpm.value = 52;
-
+    Tone.Transport.bpm.value = bpm;
     Tone.Transport.scheduleRepeat((time) => {
       player.start(time).stop(time + 0.1);
     }, "4n");
+  };
+
+  const toggleTransport = async () => {
+    await Tone.start();
+    if (Tone.Transport.state !== "started") {
+      Tone.Transport.start();
+      elements.startStopButton.textContent = "STOP";
+    } else {
+      Tone.Transport.stop();
+      elements.startStopButton.textContent = "START";
+    }
+  };
+
+  elements.incrementButton.addEventListener("click", () => {
+    let currentValue = parseInt(elements.bpmInput.value, 10);
+    if (currentValue < maxBPM) {
+      elements.bpmInput.value = currentValue + 1;
+      updateBPM();
+    }
   });
-}
 
-function toggleTransport() {
-  if (Tone.Transport.state !== "started") {
-    Tone.Transport.start();
-    startStopButton.innerHTML = "STOP";
-  } else {
-    Tone.Transport.stop();
-    startStopButton.innerHTML = "START";
-  }
-}
+  elements.decrementButton.addEventListener("click", () => {
+    let currentValue = parseInt(elements.bpmInput.value, 10);
+    if (currentValue > minBPM) {
+      elements.bpmInput.value = currentValue - 1;
+      updateBPM();
+    }
+  });
 
-const startStopButton = document.getElementById("startStop");
-startStopButton.addEventListener("click", toggleTransport);
+  elements.bpmInput.addEventListener(
+    "focus",
+    () => (elements.bpmInput.value = ""),
+  );
+  elements.bpmInput.addEventListener("blur", handleBPMInput);
+  elements.bpmInput.addEventListener("change", handleBPMInput);
 
-function syncNum() {
-  const bpmSlider = document.getElementById("bpmSlider");
-  const bpmNum = document.getElementById("bpmNum");
-  const bpm = bpmSlider.value;
-  bpmNum.value = bpm;
-  Tone.Transport.bpm.value = bpm;
-}
+  elements.waveformSelect.addEventListener("change", () => {
+    if (player) {
+      player.type = elements.waveformSelect.value;
+    }
+  });
 
-function syncSlide() {
-  const bpmSlider = document.getElementById("bpmSlider");
-  const bpmNum = document.getElementById("bpmNum");
-  const bpm = bpmNum.value;
-  bpmSlider.value = bpm;
-  Tone.Transport.bpm.value = bpm;
-}
+  elements.pitchSelect.addEventListener("change", updateFrequency);
+  elements.octaveSelect.addEventListener("change", updateFrequency);
 
-document.getElementById("waveform").addEventListener("change", function () {
-  if (player) {
-    player.type = this.value;
-  }
+  elements.startStopButton.addEventListener("click", toggleTransport);
+
+  initializePlayer();
 });
-
-document.getElementById("pitch").addEventListener("change", updateFrequency);
-document.getElementById("octave").addEventListener("change", updateFrequency);
-
-function updateFrequency() {
-  if (player) {
-    const pitch = document.getElementById("pitch").value;
-    const octave = parseInt(document.getElementById("octave").value, 10);
-    const frequency = getFrequency(pitch, octave);
-    player.frequency.setValueAtTime(frequency, Tone.now());
-  }
-}
-
-function clearInput(input) {
-  input.value = "";
-}

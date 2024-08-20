@@ -4,23 +4,6 @@
   padding: 0;
 }
 
-body {
-  align-items: center;
-  background-color: pink;
-  box-sizing: border-box;
-  color: darkblue;
-  display: flex;
-  flex-direction: column;
-  font-family: Roboto, sans-serif;
-  font-size: 3em;
-  gap: 20px;
-  height: 100vh;
-  justify-content: center;
-  margin: auto;
-  width: 100vw;
-  position: relative;
-}
-
 select,
 input,
 option,
@@ -28,7 +11,19 @@ button {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-  background-color: hotpink;
+  margin: 10px 0;
+}
+
+label {
+  margin: 3rem 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+#buttonDiv {
+  margin: 5vh 0;
 }
 
 #bpmNum {
@@ -39,65 +34,11 @@ button {
 
 #bpmSlider {
   -webkit-transform: rotate(-90deg);
-  left: -250px;
   position: absolute;
   margin: 0;
-  padding: 0;
-  width: 700px;
-  height: 50px;
-}
-input[type="range"] {
-  -webkit-appearance: none;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 10px; /* Thickness of the track */
-  background: #ddd;
-  border-radius: 5px;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px; /* Thickness of the thumb */
-  height: 20px; /* Thickness of the thumb */
-  background: #333;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-/* Firefox */
-input[type="range"]::-moz-range-track {
-  height: 10px; /* Thickness of the track */
-  background: #ddd;
-  border-radius: 5px;
-}
-input[type="range"]::-moz-range-thumb {
-  width: 20px; /* Thickness of the thumb */
-  height: 20px; /* Thickness of the thumb */
-  background: #333;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-#startStop {
-  display: inline-block;
-  padding: 15px 25px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  border: none;
-  box-shadow: 0 9px #999;
-  font-weight: bold;
-}
-
-#startStop:hover {
-  opacity: 0.7;
-}
-
-#startStop:active {
-  opacity: 0.5;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
+  padding: 3em 0;
+  width: calc(100vh - 6em);
+  height: 0;
 }
 
 #bpmNum::-webkit-outer-spin-button,
@@ -121,29 +62,11 @@ select {
   padding: 15px 0;
 }
 
-.params > * {
-  padding: 15px 32px;
-}
-
 .params select:not(:last-child) {
   border-bottom: none; /* Prevent double borders */
 }
 
-.params select:hover {
+.params select:hover,
+.params input:hover {
   opacity: 0.7;
-}
-
-#startStop,
-#bpmNum,
-.params > * {
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  display: block;
-  width: 40vw;
-  height: 10vh;
-  min-width: 500px;
-  min-height: 100px;
-  margin-bottom: 20px;
-  border-radius: 15px;
 }
